@@ -9,7 +9,13 @@
 <body>
     <div id="app">{{ msg }}
         <button v-on:click="changeState">逆转</button>
-        <todo-list></todo-list>
+        <todo-list>
+            <todo-item @logClick='handleLog'  v-for="item in items" v-bind:key="item.id" :title="item.title" :del="item.del" >
+                <template v-slot:pre="{state}">
+                    <span>{{state}}</span>
+                </template>
+            </todo-item>
+        </todo-list>
     </div>
 
     <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.0/vue.js"></script>
@@ -24,18 +30,25 @@
             },
             template: `
                 <li>
+                    <slot v-if="!del" name="pre" :state="mood.good"></slot>
+                    <slot v-else name="pre" :state="mood.bad"></slot>
                     <span v-if="!del">{{title}}</span>
                     <span v-else style='text-decoration: line-through;'>{{title}}</span>
                     <button v-if="!del" @click="handleClick">显示元素</button>
                 </li>
             `,
             data: function () {
-                return {}
+                return {
+                    mood:{
+                        good:"happy",
+                        bad:"sad"
+                    }
+                }
             },
             methods: {
                 handleClick(e){
                     e.stop;
-                    console.log('子组件事件传递');
+                    console.log('todo-item子组件事件传递');
                     this.$emit('logClick',this.title);
                 }
             },
@@ -44,7 +57,7 @@
         Vue.component('todo-list', {
             template: `
                 <ul>
-                    <todo-item @logClick='handleLog'  v-for="item in items" v-bind:key="item.id" :title="item.title" :del="item.del" ></todo-item>
+                    <slot></slot>
                 </ul>
             `,
             data: function () {
@@ -61,9 +74,7 @@
                 }
             },
             methods: {
-                handleLog(val){
-                    console.log('父组件事件:'+val);
-                }
+                
             }
         })
         var vm = new Vue({
@@ -81,6 +92,9 @@
             methods: {
                 changeState: function () {
                     this.msg = this.msg.split('').reverse().join('');
+                },
+                handleLog(val){
+                    console.log(val);
                 }
             }
         })
