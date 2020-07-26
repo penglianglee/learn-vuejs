@@ -26,20 +26,25 @@
                 <li>
                     <span v-if="!del">{{title}}</span>
                     <span v-else style='text-decoration: line-through;'>{{title}}</span>
+                    <button v-if="!del" @click="handleClick">显示元素</button>
                 </li>
             `,
             data: function () {
                 return {}
             },
             methods: {
-
+                handleClick(e){
+                    e.stop;
+                    console.log('子组件事件传递');
+                    this.$emit('logClick',this.title);
+                }
             },
         })
         /* v-for时需要绑定key */
         Vue.component('todo-list', {
             template: `
                 <ul>
-                    <todo-item  v-for="item in items" v-bind:key="item.id" :title="item.title" :del="item.del" ></todo-item>
+                    <todo-item @logClick='handleLog'  v-for="item in items" v-bind:key="item.id" :title="item.title" :del="item.del" ></todo-item>
                 </ul>
             `,
             data: function () {
@@ -53,6 +58,11 @@
                         title: "Vue学习",
                         del: false,
                     }],
+                }
+            },
+            methods: {
+                handleLog(val){
+                    console.log('父组件事件:'+val);
                 }
             }
         })
