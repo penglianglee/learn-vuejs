@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>第一个Vue程序</title>
+</head>
+
+<body>
+    <div id="app">{{ msg }}
+        <button v-on:click="changeState">逆转</button>
+        <todo-list></todo-list>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.0/vue.js"></script>
+    <script>
+        Vue.component('todo-item', {
+            props: {
+                title: String,
+                del: {
+                    type: Boolean,
+                    default: false,
+                }
+            },
+            template: `
+                <li>
+                    <span v-if="!del">{{title}}</span>
+                    <span v-else style='text-decoration: line-through;'>{{title}}</span>
+                </li>
+            `,
+            data: function () {
+                return {}
+            },
+            methods: {
+
+            },
+        })
+        /* v-for时需要绑定key */
+        Vue.component('todo-list', {
+            template: `
+                <ul>
+                    <todo-item  v-for="item in items" v-bind:key="item.id" :title="item.title" :del="item.del" ></todo-item>
+                </ul>
+            `,
+            data: function () {
+                return {
+                    items: [{
+                        id: 1,
+                        title: "React学习",
+                        del: true,
+                    }, {
+                        id: 2,
+                        title: "Vue学习",
+                        del: false,
+                    }],
+                }
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: 'hello world!',
+                items: [{
+                    title: "React学习",
+                    del: true
+                }, {
+                    title: "Vue学习",
+                    del: false
+                }],
+            },
+            methods: {
+                changeState: function () {
+                    this.msg = this.msg.split('').reverse().join('');
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
